@@ -1,6 +1,30 @@
 package com.travix.medusa.busyflights.domain.toughjet;
 
-public class ToughJetResponse {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.travix.medusa.busyflights.deserializer.IsoLocalDateTimeDeserializer;
+import com.travix.medusa.busyflights.domain.AbstractSearchFlightsResponse;
+import com.travix.medusa.busyflights.domain.busyflights.BusyFlightsResponse;
+import com.travix.medusa.busyflights.serializer.IsoLocalDateTimeSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Wither;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Wither
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ToughJetResponse extends AbstractSearchFlightsResponse{
+
+    public static final String COMPANY_NAME = "Tough Jet";
 
     private String carrier;
     private double basePrice;
@@ -8,70 +32,40 @@ public class ToughJetResponse {
     private double discount;
     private String departureAirportName;
     private String arrivalAirportName;
-    private String outboundDateTime;
-    private String inboundDateTime;
+    @JsonDeserialize(using = IsoLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = IsoLocalDateTimeSerializer.class)
+    private LocalDateTime outboundDateTime;
+    @JsonDeserialize(using = IsoLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = IsoLocalDateTimeSerializer.class)
+    private LocalDateTime inboundDateTime;
 
-    public String getCarrier() {
-        return carrier;
+    @Override
+    public BusyFlightsResponse buildResponse() {
+        BigDecimal basePrice = BigDecimal.valueOf(getBasePrice());
+        BigDecimal tax = BigDecimal.valueOf(getTax());
+        BigDecimal discount = BigDecimal.valueOf(getDiscount());
+        BigDecimal totalPrice = basePrice.add(tax).subtract(discount).setScale(2,BigDecimal.ROUND_CEILING);
+        return new BusyFlightsResponse()
+                .withAirline(carrier)
+                .withFare(totalPrice)
+                .withDepartureAirportCode(departureAirportName)
+                .withDestinationAirportCode(arrivalAirportName)
+                .withDepartureDate(outboundDateTime)
+                .withArrivalDate(inboundDateTime)
+                .withSupplier(COMPANY_NAME);
     }
 
-    public void setCarrier(final String carrier) {
-        this.carrier = carrier;
-    }
-
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(final double basePrice) {
-        this.basePrice = basePrice;
-    }
-
-    public double getTax() {
-        return tax;
-    }
-
-    public void setTax(final double tax) {
-        this.tax = tax;
-    }
-
-    public double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(final double discount) {
-        this.discount = discount;
-    }
-
-    public String getDepartureAirportName() {
-        return departureAirportName;
-    }
-
-    public void setDepartureAirportName(final String departureAirportName) {
-        this.departureAirportName = departureAirportName;
-    }
-
-    public String getArrivalAirportName() {
-        return arrivalAirportName;
-    }
-
-    public void setArrivalAirportName(final String arrivalAirportName) {
-        this.arrivalAirportName = arrivalAirportName;
-    }
-
-    public String getOutboundDateTime() {
-        return outboundDateTime;
-    }
-
-    public void setOutboundDateTime(final String outboundDateTime) {
-        this.outboundDateTime = outboundDateTime;
-    }
-
-    public String getInboundDateTime() {
-        return inboundDateTime;
-    }
-
-    public void setInboundDateTime(final String inboundDateTime) {
-        this.inboundDateTime = inboundDateTime;
+    @Override
+    public String toString() {
+        return "ToughJetResponse{" +
+                "carrier='" + carrier + '\'' +
+                ", basePrice=" + basePrice +
+                ", tax=" + tax +
+                ", discount=" + discount +
+                ", departureAirportName='" + departureAirportName + '\'' +
+                ", arrivalAirportName='" + arrivalAirportName + '\'' +
+                ", outboundDateTime=" + outboundDateTime +
+                ", inboundDateTime=" + inboundDateTime +
+                '}';
     }
 }

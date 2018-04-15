@@ -1,50 +1,44 @@
 package com.travix.medusa.busyflights.domain.toughjet;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.travix.medusa.busyflights.deserializer.IsoLocalDateTimeDeserializer;
+import com.travix.medusa.busyflights.serializer.IsoLocalDateTimeSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Wither;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Wither
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ToughJetRequest {
 
     private String from;
     private String to;
-    private String outboundDate;
-    private String inboundDate;
+    @JsonDeserialize(using = IsoLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = IsoLocalDateTimeSerializer.class)
+    private LocalDateTime outboundDate;
+    @JsonDeserialize(using = IsoLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = IsoLocalDateTimeSerializer.class)
+    private LocalDateTime inboundDate;
     private int numberOfAdults;
 
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(final String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(final String to) {
-        this.to = to;
-    }
-
-    public String getOutboundDate() {
-        return outboundDate;
-    }
-
-    public void setOutboundDate(final String outboundDate) {
-        this.outboundDate = outboundDate;
-    }
-
-    public String getInboundDate() {
-        return inboundDate;
-    }
-
-    public void setInboundDate(final String inboundDate) {
-        this.inboundDate = inboundDate;
-    }
-
-    public int getNumberOfAdults() {
-        return numberOfAdults;
-    }
-
-    public void setNumberOfAdults(final int numberOfAdults) {
-        this.numberOfAdults = numberOfAdults;
+    @Override
+    public String toString() {
+        return "ToughJetRequest{" +
+                "from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", outboundDate=" + outboundDate +
+                ", inboundDate=" + inboundDate +
+                ", numberOfAdults=" + numberOfAdults +
+                '}';
     }
 }
